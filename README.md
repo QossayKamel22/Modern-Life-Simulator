@@ -592,32 +592,30 @@ The project is currently being built from the ground up.
 
 ### Current Focus
 
-* [ ] Project architecture
-* [ ] Player system
-* [ ] Character creation
-* [ ] Game calendar
-* [ ] Time system
-* [ ] Career system
-* [ ] Basic economy
-* [ ] Finance dashboard
-* [ ] Dubai city
-* [ ] Property marketplace
-* [ ] Property ownership
-* [ ] Save / Load system
+* [x] Project architecture (Next.js App Router, modular `game/` engine decoupled from UI)
+* [x] Player system (Firebase Auth, with local guest-mode fallback for dev without env vars)
+* [x] Character creation
+* [x] Game calendar
+* [x] Time system (working hours, energy, daily ticks)
+* [x] Career system (4 tracks, promotions)
+* [x] Basic economy
+* [x] Finance dashboard
+* [x] Dubai city (plus Sharjah, Ajman, Umm Al Quwain, Riyadh)
+* [x] Property marketplace
+* [x] Property ownership (buy / sell / rent out / renovate)
+* [x] Vehicle marketplace & garage
+* [x] Creator / social media system
+* [x] Fitness system
+* [x] Life events (promotions, viral videos)
+* [x] Save / Load system (Firestore, debounced autosave)
 
 ### Planned
 
-* [ ] Property design mode
-* [ ] 3D interiors
-* [ ] Car garage
-* [ ] Car customization
-* [ ] YouTube system
-* [ ] Social media system
-* [ ] Fitness system
-* [ ] Multiple cities
+* [ ] Property design mode (3D)
+* [ ] 3D interiors and character models (Three.js / React Three Fiber)
+* [ ] Car customization (visual)
 * [ ] Dynamic economy
-* [ ] Life events
-* [ ] Advanced career progression
+* [ ] Advanced career progression trees
 * [ ] Achievements
 * [ ] Leaderboards
 
@@ -804,6 +802,35 @@ Your life.
 **Modern Life Simulator**
 
 *A virtual life. Your decisions. Your story.*
+
+---
+
+# 🧑‍💻 Getting Started
+
+```bash
+npm install
+npm run dev
+```
+
+The app runs at `http://localhost:3000`. Without Firebase configured, it runs in a
+local **guest mode**: sign-up/login just create a save in your browser's
+`localStorage`, so you can play the full loop immediately.
+
+### Enabling Firebase (accounts + cloud saves)
+
+1. Create a project at [Firebase Console](https://console.firebase.google.com).
+2. Enable **Authentication → Email/Password** and **Firestore Database**.
+3. Copy `.env.local.example` to `.env.local` and fill in your Web App config values.
+4. Restart the dev server. Sign-up/login will now use real Firebase accounts, and
+   game state autosaves to `users/{uid}/gameState/main` in Firestore.
+
+### Quality checks
+
+```bash
+npx tsc --noEmit   # type check
+npm run lint       # eslint
+npm run build      # production build
+```
 
 ---
 

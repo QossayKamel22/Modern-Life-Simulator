@@ -1,0 +1,111 @@
+import type { PropertyListing } from "@/types/game";
+
+export const PROPERTY_LISTINGS: PropertyListing[] = [
+  {
+    id: "dubai-studio-1",
+    name: "Deira Compact Studio",
+    cityId: "dubai",
+    type: "studio",
+    price: 380000,
+    monthlyRent: 3200,
+    sizeSqm: 38,
+    rooms: 1,
+    condition: "fair",
+  },
+  {
+    id: "dubai-apartment-1",
+    name: "JVC One-Bedroom Apartment",
+    cityId: "dubai",
+    type: "apartment",
+    price: 750000,
+    monthlyRent: 5800,
+    sizeSqm: 68,
+    rooms: 2,
+    condition: "good",
+  },
+  {
+    id: "dubai-apartment-2",
+    name: "Marina Two-Bedroom Apartment",
+    cityId: "dubai",
+    type: "apartment",
+    price: 1450000,
+    monthlyRent: 9800,
+    sizeSqm: 105,
+    rooms: 3,
+    condition: "excellent",
+  },
+  {
+    id: "dubai-townhouse-1",
+    name: "Arabian Ranches Townhouse",
+    cityId: "dubai",
+    type: "townhouse",
+    price: 2600000,
+    monthlyRent: 15500,
+    sizeSqm: 220,
+    rooms: 4,
+    condition: "good",
+  },
+  {
+    id: "dubai-villa-1",
+    name: "Emirates Hills Villa",
+    cityId: "dubai",
+    type: "villa",
+    price: 7800000,
+    monthlyRent: 38000,
+    sizeSqm: 520,
+    rooms: 6,
+    condition: "excellent",
+  },
+  {
+    id: "dubai-commercial-1",
+    name: "Business Bay Office Unit",
+    cityId: "dubai",
+    type: "commercial",
+    price: 1900000,
+    monthlyRent: 14000,
+    sizeSqm: 140,
+    rooms: 3,
+    condition: "good",
+  },
+  {
+    id: "dubai-land-1",
+    name: "Al Furjan Residential Plot",
+    cityId: "dubai",
+    type: "land",
+    price: 1200000,
+    monthlyRent: 0,
+    sizeSqm: 650,
+    rooms: 0,
+    condition: "fair",
+  },
+  {
+    id: "sharjah-studio-1",
+    name: "Al Majaz Studio",
+    cityId: "sharjah",
+    type: "studio",
+    price: 220000,
+    monthlyRent: 1900,
+    sizeSqm: 34,
+    rooms: 1,
+    condition: "fair",
+  },
+  {
+    id: "sharjah-apartment-1",
+    name: "Al Nahda Two-Bedroom",
+    cityId: "sharjah",
+    type: "apartment",
+    price: 480000,
+    monthlyRent: 3400,
+    sizeSqm: 92,
+    rooms: 3,
+    condition: "good",
+  },
+];
+
+export function getPropertyListingById(id: string): PropertyListing | undefined {
+  return PROPERTY_LISTINGS.find((p) => p.id === id);
+}
+
+export function getPropertyListingsForCity(cityId: string): PropertyListing[] {
+  return PROPERTY_LISTINGS.filter((p) => p.cityId === cityId);
+}
