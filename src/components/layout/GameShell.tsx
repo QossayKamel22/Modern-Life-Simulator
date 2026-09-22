@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import {
   LayoutDashboard,
+  Map as MapIcon,
   Briefcase,
   Wallet,
   Building2,
@@ -12,17 +13,21 @@ import {
   MapPin,
   Sun,
   Moon,
+  Volume2,
+  VolumeX,
   LogOut,
 } from "lucide-react";
 import { useTheme } from "@/components/theme/ThemeProvider";
+import { useSound } from "@/hooks/useSound";
 import { cn, formatDate, formatTime } from "@/lib/utils/format";
 import type { GameState } from "@/types/game";
 import { getCityById } from "@/data/cities";
 import { getCareerTrackById } from "@/data/careers";
 
-export type Tab = "dashboard" | "career" | "finance" | "property" | "vehicle" | "creator" | "fitness" | "city";
+export type Tab = "map" | "dashboard" | "career" | "finance" | "property" | "vehicle" | "creator" | "fitness" | "city";
 
 const TABS: { id: Tab; label: string; icon: typeof LayoutDashboard }[] = [
+  { id: "map", label: "Map", icon: MapIcon },
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { id: "career", label: "Career", icon: Briefcase },
   { id: "finance", label: "Finance", icon: Wallet },
@@ -43,6 +48,7 @@ interface GameShellProps {
 
 export function GameShell({ state, activeTab, onTabChange, onLogout, children }: GameShellProps) {
   const { theme, toggleTheme } = useTheme();
+  const { enabled: soundEnabled, toggle: toggleSound } = useSound();
   const city = getCityById(state.city.currentCityId);
   const track = state.career.trackId ? getCareerTrackById(state.career.trackId) : null;
   const level = track?.levels[state.career.levelIndex];
@@ -90,6 +96,13 @@ export function GameShell({ state, activeTab, onTabChange, onLogout, children }:
               {theme === "dark" ? "Light" : "Dark"}
             </button>
             <button
+              onClick={toggleSound}
+              className="glass flex items-center justify-center rounded-xl px-3 py-2 text-xs text-muted hover:text-foreground"
+              aria-label="Toggle sound"
+            >
+              {soundEnabled ? <Volume2 size={14} /> : <VolumeX size={14} />}
+            </button>
+            <button
               onClick={onLogout}
               className="glass flex flex-1 items-center justify-center gap-2 rounded-xl py-2 text-xs text-muted hover:text-danger"
             >
@@ -115,6 +128,13 @@ export function GameShell({ state, activeTab, onTabChange, onLogout, children }:
             aria-label="Toggle theme"
           >
             {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+          </button>
+          <button
+            onClick={toggleSound}
+            className="flex h-8 w-8 items-center justify-center rounded-full text-muted hover:text-foreground"
+            aria-label="Toggle sound"
+          >
+            {soundEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
           </button>
           <button
             onClick={onLogout}

@@ -8,8 +8,10 @@ import { useGameStore } from "@/hooks/useGameStore";
 import { isFirebaseConfigured } from "@/lib/firebase/config";
 import { getOrCreateLocalUser } from "@/lib/game/localAuth";
 import { signOut } from "@/lib/firebase/auth";
+import { IntroSequence } from "@/components/onboarding/IntroSequence";
 import { CharacterCreator } from "@/components/character/CharacterCreator";
 import { GameShell, type Tab } from "@/components/layout/GameShell";
+import { CityMap } from "@/components/city/CityMap";
 import { Dashboard } from "@/components/dashboard/Dashboard";
 import { CareerPanel } from "@/components/career/CareerPanel";
 import { FinancePanel } from "@/components/finance/FinancePanel";
@@ -19,12 +21,15 @@ import { CreatorPanel } from "@/components/creator/CreatorPanel";
 import { FitnessPanel } from "@/components/fitness/FitnessPanel";
 import { CityPanel } from "@/components/city/CityPanel";
 import { Toast } from "@/components/ui/Toast";
+import { AchievementToast } from "@/components/ui/AchievementToast";
+import { EventModal } from "@/components/events/EventModal";
 
 export default function PlayPage() {
   const router = useRouter();
   const { user, loading, firebaseConfigured } = useAuth();
-  const { state, status, lastMessage, init, createCharacter, reset } = useGameStore();
-  const [tab, setTab] = useState<Tab>("dashboard");
+  const { state, status, lastMessage, lastAchievement, init, createCharacter, reset } = useGameStore();
+  const [tab, setTab] = useState<Tab>("map");
+  const [introDone, setIntroDone] = useState(false);
 
   useEffect(() => {
     if (loading) return;
@@ -56,6 +61,7 @@ export default function PlayPage() {
   }
 
   if (status === "needsCharacter") {
+    if (!introDone) return <IntroSequence onDone={() => setIntroDone(true)} />;
     return <CharacterCreator onComplete={createCharacter} />;
   }
 
@@ -67,6 +73,8 @@ export default function PlayPage() {
     );
   }
 
+  const pendingEvent = state.events.find((e) => !e.resolved && e.choices) ?? null;
+
   return (
     <GameShell state={state} activeTab={tab} onTabChange={setTab} onLogout={handleLogout}>
       <AnimatePresence mode="wait">
@@ -77,6 +85,7 @@ export default function PlayPage() {
           exit={{ opacity: 0, y: -8 }}
           transition={{ duration: 0.22, ease: "easeOut" }}
         >
+          {tab === "map" && <CityMap state={state} onNavigate={setTab} />}
           {tab === "dashboard" && <Dashboard state={state} />}
           {tab === "career" && <CareerPanel state={state} />}
           {tab === "finance" && <FinancePanel state={state} />}
@@ -88,6 +97,8 @@ export default function PlayPage() {
         </motion.div>
       </AnimatePresence>
       <Toast message={lastMessage} />
+      <AchievementToast achievement={lastAchievement} />
+      <EventModal event={pendingEvent} />
     </GameShell>
   );
 }

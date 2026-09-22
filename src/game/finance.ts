@@ -1,11 +1,19 @@
 import type {
   FinanceState,
+  GameState,
   GameTime,
   IncomeCategory,
   ExpenseCategory,
   Transaction,
 } from "@/types/game";
 import { generateId } from "@/lib/utils/id";
+
+export function netWorth(state: GameState): number {
+  const cash = state.finances.cash + state.finances.bank;
+  const properties = state.properties.reduce((sum, p) => sum + p.currentValue, 0);
+  const vehicles = state.vehicles.reduce((sum, v) => sum + v.currentValue, 0);
+  return cash + properties + vehicles;
+}
 
 export function addIncome(
   finances: FinanceState,

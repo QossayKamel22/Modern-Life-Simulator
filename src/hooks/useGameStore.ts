@@ -4,7 +4,9 @@ import { create } from "zustand";
 import type { Character, ContentNiche, GameState, Player, PropertyCustomization } from "@/types/game";
 import { createInitialGameState } from "@/game/initialState";
 import * as engine from "@/game/engine";
+import { checkNewAchievements, type Achievement } from "@/game/achievements";
 import { loadSave, persistSave } from "@/lib/game/persistence";
+import { playCash, playConfirm, playError, playFanfare } from "@/lib/audio/sfx";
 
 type Status = "idle" | "loading" | "ready" | "needsCharacter";
 
@@ -13,9 +15,10 @@ interface GameStore {
   state: GameState | null;
   status: Status;
   lastMessage: string | null;
+  lastAchievement: Achievement | null;
   init: (uid: string, displayName: string) => Promise<void>;
   createCharacter: (character: Character) => void;
-  work: () => void;
+  work: (performanceBonus?: number) => void;
   sleep: () => void;
   goToGym: () => void;
   applyForJob: (trackId: string) => void;
@@ -32,6 +35,7 @@ interface GameStore {
   createChannel: (name: string, niche: ContentNiche) => void;
   createContent: (channelId: string) => void;
   moveCity: (cityId: string) => void;
+  resolveEventChoice: (eventId: string, choiceId: string) => void;
   reset: () => void;
 }
 
@@ -44,14 +48,47 @@ function scheduleSave(uid: string, state: GameState) {
   }, 1200);
 }
 
+const MONEY_MESSAGE_HINTS = ["AED", "Bought", "Sold", "bonus", "Repaired", "Sponsorship"];
+
 function applyResult(
   set: (partial: Partial<GameStore>) => void,
   get: () => GameStore,
   result: engine.ActionResult,
 ) {
-  set({ state: result.state, lastMessage: result.message });
+  if (!result.success) {
+    playError();
+    set({ lastMessage: result.message });
+    return;
+  }
+
+  const previous = get().state;
+  let state = result.state;
+
+  const newlyUnlocked = checkNewAchievements(state);
+  if (newlyUnlocked.length > 0) {
+    state = { ...state, achievements: [...state.achievements, ...newlyUnlocked.map((a) => a.id)] };
+  }
+
+  const latestEvent = state.events[0];
+  const gotPromoted =
+    latestEvent?.type === "promotion" && (!previous || !previous.events.some((e) => e.id === latestEvent.id));
+
+  if (newlyUnlocked.length > 0 || gotPromoted) {
+    playFanfare();
+  } else if (MONEY_MESSAGE_HINTS.some((hint) => result.message.includes(hint))) {
+    playCash();
+  } else {
+    playConfirm();
+  }
+
+  set({
+    state,
+    lastMessage: result.message,
+    lastAchievement: newlyUnlocked[0] ?? null,
+  });
+
   const uid = get().uid;
-  if (result.success && uid) scheduleSave(uid, result.state);
+  if (uid) scheduleSave(uid, state);
 }
 
 export const useGameStore = create<GameStore>((set, get) => ({
@@ -59,6 +96,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   state: null,
   status: "idle",
   lastMessage: null,
+  lastAchievement: null,
 
   init: async (uid, displayName) => {
     set({ status: "loading", uid });
@@ -85,10 +123,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
     scheduleSave(uid, state);
   },
 
-  work: () => {
+  work: (performanceBonus) => {
     const { state } = get();
     if (!state) return;
-    applyResult(set, get, engine.work(state));
+    applyResult(set, get, engine.work(state, performanceBonus));
   },
   sleep: () => {
     const { state } = get();
@@ -170,6 +208,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
     if (!state) return;
     applyResult(set, get, engine.moveCity(state, cityId));
   },
+  resolveEventChoice: (eventId, choiceId) => {
+    const { state } = get();
+    if (!state) return;
+    applyResult(set, get, engine.resolveEventChoice(state, eventId, choiceId));
+  },
 
-  reset: () => set({ uid: null, state: null, status: "idle", lastMessage: null }),
+  reset: () => set({ uid: null, state: null, status: "idle", lastMessage: null, lastAchievement: null }),
 }));

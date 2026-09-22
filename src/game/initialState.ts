@@ -35,6 +35,7 @@ export function createInitialGameState(player: Player, character: Character): Ga
     time: INITIAL_TIME,
     events: [],
     currentActivity: "idle",
+    achievements: [],
     version: 1,
   };
 }

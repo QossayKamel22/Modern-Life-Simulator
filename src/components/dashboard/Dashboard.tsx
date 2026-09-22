@@ -1,27 +1,23 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Trophy } from "lucide-react";
 import type { GameState } from "@/types/game";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { StatBar } from "@/components/ui/StatBar";
 import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 import { QuickActions } from "@/components/dashboard/QuickActions";
+import { DynamicCharacterViewer } from "@/components/three/DynamicCharacterViewer";
 import { formatCurrency, formatDate } from "@/lib/utils/format";
 import { getCareerTrackById } from "@/data/careers";
 import { getCityById } from "@/data/cities";
-import { monthlyExpenses, monthlyIncome } from "@/game/finance";
+import { monthlyExpenses, monthlyIncome, netWorth } from "@/game/finance";
+import { ACHIEVEMENTS } from "@/game/achievements";
 
 const cardEntrance = {
   initial: { opacity: 0, y: 14 },
   animate: { opacity: 1, y: 0 },
 };
-
-function netWorth(state: GameState): number {
-  const cash = state.finances.cash + state.finances.bank;
-  const properties = state.properties.reduce((sum, p) => sum + p.currentValue, 0);
-  const vehicles = state.vehicles.reduce((sum, v) => sum + v.currentValue, 0);
-  return cash + properties + vehicles;
-}
 
 export function Dashboard({ state }: { state: GameState }) {
   const track = state.career.trackId ? getCareerTrackById(state.career.trackId) : null;
@@ -33,17 +29,27 @@ export function Dashboard({ state }: { state: GameState }) {
   const followers = state.creator.channels.reduce((sum, c) => sum + c.followers, 0);
   const views = state.creator.channels.reduce((sum, c) => sum + c.totalViews, 0);
   const creatorRevenue = state.creator.channels.reduce((sum, c) => sum + c.revenue, 0);
+  const unlockedAchievements = ACHIEVEMENTS.filter((a) => state.achievements.includes(a.id));
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">Welcome back, {state.character.name}</h1>
-        <p className="mt-1 text-sm text-muted">
-          {formatDate(state.time)} — Age {state.character.age} — Living in {city?.name}
-        </p>
-      </div>
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[220px_1fr]">
+        <Card className="overflow-hidden">
+          <div className="h-52 w-full lg:h-full">
+            <DynamicCharacterViewer character={state.character} className="h-full w-full" controls={false} />
+          </div>
+        </Card>
 
-      <QuickActions />
+        <div className="flex flex-col gap-4">
+          <div>
+            <h1 className="text-2xl font-semibold">Welcome back, {state.character.name}</h1>
+            <p className="mt-1 text-sm text-muted">
+              {formatDate(state.time)} — Age {state.character.age} — Living in {city?.name}
+            </p>
+          </div>
+          <QuickActions />
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <motion.div {...cardEntrance} transition={{ duration: 0.3, delay: 0 }}>
@@ -116,7 +122,7 @@ export function Dashboard({ state }: { state: GameState }) {
         </motion.div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-4">
         <Card>
           <CardHeader>
             <CardTitle>Lifestyle</CardTitle>
@@ -137,6 +143,28 @@ export function Dashboard({ state }: { state: GameState }) {
             <p className="mt-1 text-xs text-muted">
               {views.toLocaleString()} total views · {formatCurrency(creatorRevenue)} earned
             </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Achievements</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-semibold">
+              {unlockedAchievements.length}/{ACHIEVEMENTS.length}
+            </p>
+            <ul className="mt-2 space-y-1">
+              {unlockedAchievements
+                .slice(-3)
+                .reverse()
+                .map((a) => (
+                  <li key={a.id} className="flex items-center gap-1.5 text-xs text-muted">
+                    <Trophy size={12} className="text-accent" /> {a.title}
+                  </li>
+                ))}
+              {unlockedAchievements.length === 0 && <li className="text-xs text-muted">None yet — get started!</li>}
+            </ul>
           </CardContent>
         </Card>
 

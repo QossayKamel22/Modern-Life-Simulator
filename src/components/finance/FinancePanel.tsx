@@ -6,14 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 import { FadeInUp } from "@/components/ui/Motion";
 import { formatCurrency, formatDate } from "@/lib/utils/format";
-import { monthlyExpenses, monthlyIncome } from "@/game/finance";
-
-function netWorth(state: GameState): number {
-  const cash = state.finances.cash + state.finances.bank;
-  const properties = state.properties.reduce((sum, p) => sum + p.currentValue, 0);
-  const vehicles = state.vehicles.reduce((sum, v) => sum + v.currentValue, 0);
-  return cash + properties + vehicles;
-}
+import { monthlyExpenses, monthlyIncome, netWorth } from "@/game/finance";
 
 const CATEGORY_LABELS: Record<string, string> = {
   salary: "Salary",

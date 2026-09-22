@@ -6,6 +6,7 @@ import type {
   ContentNiche,
   GameEvent,
   GameEventType,
+  EventChoice,
   PropertyCustomization,
 } from "@/types/game";
 import { addMinutes, daysBetween, isWithinWorkingHours } from "@/game/time";
@@ -49,6 +50,29 @@ function pushEvent(state: GameState, type: GameEventType, title: string, descrip
     resolved: false,
   };
   return { ...state, events: [event, ...state.events].slice(0, 100) };
+}
+
+function pushChoiceEvent(
+  state: GameState,
+  type: GameEventType,
+  title: string,
+  description: string,
+  choices: EventChoice[],
+): GameState {
+  const event: GameEvent = {
+    id: generateId("evt"),
+    type,
+    title,
+    description,
+    timestamp: state.time,
+    resolved: false,
+    choices,
+  };
+  return { ...state, events: [event, ...state.events].slice(0, 100) };
+}
+
+function hasUnresolvedEventOfType(state: GameState, type: GameEventType): boolean {
+  return state.events.some((e) => e.type === type && !e.resolved);
 }
 
 /**
@@ -150,14 +174,130 @@ function applyDailyTick(state: GameState): GameState {
     fitness: { ...next.fitness, energy: Math.min(100, next.fitness.energy + 5) },
   };
 
+  next = rollRandomEvents(next);
+
   return next;
+}
+
+const CAR_BREAKDOWN_DAILY_CHANCE = 0.02;
+const SPONSORSHIP_DAILY_CHANCE = 0.03;
+
+function rollRandomEvents(state: GameState): GameState {
+  let next = state;
+
+  if (
+    next.vehicles.length > 0 &&
+    !hasUnresolvedEventOfType(next, "carBreakdown") &&
+    Math.random() < CAR_BREAKDOWN_DAILY_CHANCE
+  ) {
+    const vehicle = next.vehicles[Math.floor(Math.random() * next.vehicles.length)];
+    const listing = getVehicleListingById(vehicle.listingId);
+    if (listing) {
+      next = pushChoiceEvent(
+        next,
+        "carBreakdown",
+        "Car Trouble",
+        `Your ${listing.brand} ${listing.model} broke down. Repair it now or risk further damage?`,
+        [
+          { id: "repair", label: "Repair now", description: `Pay for repairs and restore it to excellent condition.` },
+          { id: "ignore", label: "Ignore it", description: "Skip the cost, but the car's value will drop." },
+        ],
+      );
+    }
+  }
+
+  const eligibleChannel = next.creator.channels.find((c) => c.followers >= 1000);
+  if (eligibleChannel && !hasUnresolvedEventOfType(next, "sponsorshipOffer") && Math.random() < SPONSORSHIP_DAILY_CHANCE) {
+    next = pushChoiceEvent(
+      next,
+      "sponsorshipOffer",
+      "Sponsorship Offer",
+      `A brand wants to sponsor a post on "${eligibleChannel.name}". Take the deal?`,
+      [
+        { id: "accept", label: "Accept deal", description: "Immediate cash, but a small engagement hit from the ad." },
+        { id: "decline", label: "Decline", description: "Keep the channel fully organic." },
+      ],
+    );
+  }
+
+  return next;
+}
+
+export function resolveEventChoice(state: GameState, eventId: string, choiceId: string): ActionResult {
+  const event = state.events.find((e) => e.id === eventId);
+  if (!event) return fail(state, "Event not found.");
+  if (event.resolved) return fail(state, "This event was already resolved.");
+  if (!event.choices?.some((c) => c.id === choiceId)) return fail(state, "Invalid choice.");
+
+  const markResolved = (s: GameState): GameState => ({
+    ...s,
+    events: s.events.map((e) => (e.id === eventId ? { ...e, resolved: true, chosenId: choiceId } : e)),
+  });
+
+  if (event.type === "carBreakdown") {
+    const vehicle = state.vehicles.find((v) => {
+      const listing = getVehicleListingById(v.listingId);
+      return listing && event.description.includes(`${listing.brand} ${listing.model}`);
+    });
+    if (!vehicle) return ok(markResolved(state), "The vehicle is gone — nothing to resolve.");
+
+    if (choiceId === "repair") {
+      const repairCost = Math.round(vehicle.currentValue * 0.08);
+      const totalFunds = state.finances.cash + state.finances.bank;
+      if (totalFunds < repairCost) return fail(state, `Not enough money for the ${repairCost} AED repair.`);
+      let next = markResolved(state);
+      next = {
+        ...next,
+        finances: addExpense(next.finances, "maintenance", repairCost, next.time, "Car repair"),
+        vehicles: next.vehicles.map((v) =>
+          v.listingId === vehicle.listingId ? { ...v, condition: "excellent" as const } : v,
+        ),
+      };
+      return ok(next, `Repaired for ${repairCost} AED. Good as new.`);
+    }
+
+    let next = markResolved(state);
+    next = {
+      ...next,
+      vehicles: next.vehicles.map((v) =>
+        v.listingId === vehicle.listingId
+          ? { ...v, condition: "poor" as const, currentValue: Math.round(v.currentValue * 0.85) }
+          : v,
+      ),
+    };
+    return ok(next, "You ignored the damage. The car's value dropped.");
+  }
+
+  if (event.type === "sponsorshipOffer") {
+    const channel = state.creator.channels.find((c) => event.description.includes(c.name));
+    if (!channel) return ok(markResolved(state), "The channel is gone — nothing to resolve.");
+
+    if (choiceId === "accept") {
+      const payout = Math.round(channel.followers * 0.8 + 300);
+      let next = markResolved(state);
+      next = {
+        ...next,
+        finances: addIncome(next.finances, "creator", payout, next.time, `Sponsorship — ${channel.name}`),
+        creator: {
+          channels: next.creator.channels.map((c) =>
+            c.id === channel.id ? { ...c, engagement: Math.max(0.02, c.engagement - 0.01) } : c,
+          ),
+        },
+      };
+      return ok(next, `Sponsorship accepted: +${payout} AED.`);
+    }
+
+    return ok(markResolved(state), "You declined the sponsorship.");
+  }
+
+  return ok(markResolved(state), "Resolved.");
 }
 
 // ---------------------------------------------------------------------------
 // Time & lifestyle actions
 // ---------------------------------------------------------------------------
 
-export function work(state: GameState): ActionResult {
+export function work(state: GameState, performanceBonus = 0): ActionResult {
   if (!state.career.trackId) return fail(state, "You don't have a job yet. Apply for one first.");
   const track = getCareerTrackById(state.career.trackId);
   const level = track?.levels[state.career.levelIndex];
@@ -176,8 +316,17 @@ export function work(state: GameState): ActionResult {
     currentActivity: "idle",
   };
 
+  let message = `Worked a ${hoursWorked}-hour shift as ${level.title}.`;
+  if (performanceBonus > 0) {
+    next = {
+      ...next,
+      finances: addIncome(next.finances, "side", performanceBonus, next.time, "Performance bonus"),
+    };
+    message += ` Great shift — +${performanceBonus} AED bonus!`;
+  }
+
   next = maybeCheckPromotion(next);
-  return ok(next, `Worked a ${hoursWorked}-hour shift as ${level.title}.`);
+  return ok(next, message);
 }
 
 function maybeCheckPromotion(state: GameState): GameState {

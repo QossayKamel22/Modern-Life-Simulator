@@ -211,7 +211,14 @@ export type GameEventType =
   | "viralVideo"
   | "jobOffer"
   | "propertyOpportunity"
-  | "rentalVacancy";
+  | "rentalVacancy"
+  | "sponsorshipOffer";
+
+export interface EventChoice {
+  id: string;
+  label: string;
+  description: string;
+}
 
 export interface GameEvent {
   id: string;
@@ -220,6 +227,9 @@ export interface GameEvent {
   description: string;
   timestamp: GameTime;
   resolved: boolean;
+  /** Present when the player must pick an outcome (e.g. repair vs. ignore a breakdown). */
+  choices?: EventChoice[];
+  chosenId?: string;
 }
 
 export interface Player {
@@ -242,5 +252,6 @@ export interface GameState {
   time: GameTime;
   events: GameEvent[];
   currentActivity: ActivityId;
+  achievements: string[];
   version: number;
 }
