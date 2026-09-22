@@ -36,7 +36,7 @@ export function PropertyPanel({ state }: { state: GameState }) {
           <h1 className="text-2xl font-semibold">Property</h1>
           <p className="mt-1 text-sm text-muted">Buy, rent out, and renovate real estate.</p>
         </div>
-        <div className="flex gap-1 rounded-xl border border-border p-1">
+        <div className="glass flex gap-1 rounded-full p-1">
           <Button size="sm" variant={view === "owned" ? "primary" : "ghost"} onClick={() => setView("owned")}>
             My Properties
           </Button>

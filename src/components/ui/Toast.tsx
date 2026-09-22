@@ -16,8 +16,8 @@ export function Toast({ message }: { message: string | null }) {
   if (!message || !visible) return null;
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-6 z-50 flex justify-center px-4">
-      <div className="pointer-events-auto rounded-full border border-border bg-surface-raised px-4 py-2.5 text-sm font-medium text-foreground shadow-lg shadow-black/10">
+    <div className="pointer-events-none fixed inset-x-0 bottom-24 z-50 flex justify-center px-4 lg:bottom-6">
+      <div className="glass-strong pointer-events-auto rounded-full px-5 py-3 text-sm font-medium text-foreground">
         {message}
       </div>
     </div>

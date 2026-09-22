@@ -140,10 +140,11 @@ export interface VehicleListing {
   maintenanceCostPerMonth: number;
   insuranceCostPerMonth: number;
   performance: number; // 0-100
+  defaultColor: string; // hex, used for the showroom default paint
 }
 
 export interface VehicleCustomization {
-  color: string;
+  color: string; // hex paint color
   wheels: string;
   suspension: string;
   interior: string;

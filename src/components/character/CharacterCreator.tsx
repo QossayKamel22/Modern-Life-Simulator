@@ -32,10 +32,10 @@ function OptionRow({ label, options, value, onChange }: OptionRowProps) {
             type="button"
             onClick={() => onChange(option)}
             className={cn(
-              "rounded-full border px-3 py-1.5 text-sm capitalize transition-colors",
+              "rounded-full px-3 py-1.5 text-sm capitalize transition-all duration-200",
               value === option
-                ? "border-accent bg-accent text-accent-foreground"
-                : "border-border bg-surface-raised text-foreground hover:border-accent/50",
+                ? "bg-accent text-accent-foreground shadow-[0_4px_14px_-4px_var(--accent)]"
+                : "glass text-foreground hover:bg-white/10",
             )}
           >
             {option}

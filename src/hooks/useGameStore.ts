@@ -23,6 +23,7 @@ interface GameStore {
   buyVehicle: (listingId: string) => void;
   sellVehicle: (listingId: string) => void;
   setActiveVehicle: (listingId: string) => void;
+  customizeVehiclePaint: (listingId: string, color: string) => void;
   buyProperty: (listingId: string) => void;
   sellProperty: (listingId: string) => void;
   rentOutProperty: (listingId: string) => void;
@@ -123,6 +124,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const { state } = get();
     if (!state) return;
     applyResult(set, get, engine.setActiveVehicle(state, listingId));
+  },
+  customizeVehiclePaint: (listingId, color) => {
+    const { state } = get();
+    if (!state) return;
+    applyResult(set, get, engine.customizeVehiclePaint(state, listingId, color));
   },
   buyProperty: (listingId) => {
     const { state } = get();

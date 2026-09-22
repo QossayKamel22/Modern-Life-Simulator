@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { useGameStore } from "@/hooks/useGameStore";
@@ -68,14 +69,24 @@ export default function PlayPage() {
 
   return (
     <GameShell state={state} activeTab={tab} onTabChange={setTab} onLogout={handleLogout}>
-      {tab === "dashboard" && <Dashboard state={state} />}
-      {tab === "career" && <CareerPanel state={state} />}
-      {tab === "finance" && <FinancePanel state={state} />}
-      {tab === "property" && <PropertyPanel state={state} />}
-      {tab === "vehicle" && <VehiclePanel state={state} />}
-      {tab === "creator" && <CreatorPanel state={state} />}
-      {tab === "fitness" && <FitnessPanel state={state} />}
-      {tab === "city" && <CityPanel state={state} />}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={tab}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.22, ease: "easeOut" }}
+        >
+          {tab === "dashboard" && <Dashboard state={state} />}
+          {tab === "career" && <CareerPanel state={state} />}
+          {tab === "finance" && <FinancePanel state={state} />}
+          {tab === "property" && <PropertyPanel state={state} />}
+          {tab === "vehicle" && <VehiclePanel state={state} />}
+          {tab === "creator" && <CreatorPanel state={state} />}
+          {tab === "fitness" && <FitnessPanel state={state} />}
+          {tab === "city" && <CityPanel state={state} />}
+        </motion.div>
+      </AnimatePresence>
       <Toast message={lastMessage} />
     </GameShell>
   );

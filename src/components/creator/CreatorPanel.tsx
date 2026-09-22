@@ -54,8 +54,8 @@ export function CreatorPanel({ state }: { state: GameState }) {
                 <button
                   key={n.id}
                   onClick={() => setNiche(n.id)}
-                  className={`rounded-full border px-3 py-1 text-xs transition-colors ${
-                    niche === n.id ? "border-accent bg-accent text-accent-foreground" : "border-border text-muted"
+                  className={`rounded-full px-3 py-1 text-xs transition-all duration-200 ${
+                    niche === n.id ? "bg-accent text-accent-foreground shadow-[0_4px_14px_-4px_var(--accent)]" : "glass text-muted"
                   }`}
                 >
                   {n.label}

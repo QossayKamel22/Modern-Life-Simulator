@@ -1,13 +1,20 @@
 "use client";
 
+import { motion } from "framer-motion";
 import type { GameState } from "@/types/game";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { StatBar } from "@/components/ui/StatBar";
+import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 import { QuickActions } from "@/components/dashboard/QuickActions";
 import { formatCurrency, formatDate } from "@/lib/utils/format";
 import { getCareerTrackById } from "@/data/careers";
 import { getCityById } from "@/data/cities";
 import { monthlyExpenses, monthlyIncome } from "@/game/finance";
+
+const cardEntrance = {
+  initial: { opacity: 0, y: 14 },
+  animate: { opacity: 1, y: 0 },
+};
 
 function netWorth(state: GameState): number {
   const cash = state.finances.cash + state.finances.bank;
@@ -39,62 +46,74 @@ export function Dashboard({ state }: { state: GameState }) {
       <QuickActions />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>Net Worth</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-semibold">{formatCurrency(netWorth(state))}</p>
-            <p className="mt-1 text-xs text-muted">Cash + assets</p>
-          </CardContent>
-        </Card>
+        <motion.div {...cardEntrance} transition={{ duration: 0.3, delay: 0 }}>
+          <Card>
+            <CardHeader>
+              <CardTitle>Net Worth</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-2xl font-semibold">
+                <AnimatedNumber value={netWorth(state)} format={(n) => formatCurrency(n)} />
+              </p>
+              <p className="mt-1 text-xs text-muted">Cash + assets</p>
+            </CardContent>
+          </Card>
+        </motion.div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Cash on Hand</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-semibold">{formatCurrency(state.finances.cash + state.finances.bank)}</p>
-            <p className="mt-1 text-xs text-muted">
-              Income {formatCurrency(income)} · Expenses {formatCurrency(expenses)}
-            </p>
-          </CardContent>
-        </Card>
+        <motion.div {...cardEntrance} transition={{ duration: 0.3, delay: 0.05 }}>
+          <Card>
+            <CardHeader>
+              <CardTitle>Cash on Hand</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-2xl font-semibold">
+                <AnimatedNumber value={state.finances.cash + state.finances.bank} format={(n) => formatCurrency(n)} />
+              </p>
+              <p className="mt-1 text-xs text-muted">
+                Income {formatCurrency(income)} · Expenses {formatCurrency(expenses)}
+              </p>
+            </CardContent>
+          </Card>
+        </motion.div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Career</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-semibold">{level ? level.title : "Unemployed"}</p>
-            <p className="mt-1 text-xs text-muted">
-              {level ? `${formatCurrency(level.salary)}/mo` : "Apply for a job in the Career tab"}
-            </p>
-            {level && nextLevel && (
-              <div className="mt-3">
-                <StatBar
-                  label={`Progress to ${nextLevel.title}`}
-                  value={state.career.experienceHours}
-                  max={nextLevel.experienceRequired}
-                />
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <motion.div {...cardEntrance} transition={{ duration: 0.3, delay: 0.1 }}>
+          <Card>
+            <CardHeader>
+              <CardTitle>Career</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-2xl font-semibold">{level ? level.title : "Unemployed"}</p>
+              <p className="mt-1 text-xs text-muted">
+                {level ? `${formatCurrency(level.salary)}/mo` : "Apply for a job in the Career tab"}
+              </p>
+              {level && nextLevel && (
+                <div className="mt-3">
+                  <StatBar
+                    label={`Progress to ${nextLevel.title}`}
+                    value={state.career.experienceHours}
+                    max={nextLevel.experienceRequired}
+                  />
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Assets</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-semibold">
-              {state.properties.length} {state.properties.length === 1 ? "property" : "properties"}
-            </p>
-            <p className="mt-1 text-xs text-muted">
-              {state.vehicles.length} {state.vehicles.length === 1 ? "vehicle" : "vehicles"}
-            </p>
-          </CardContent>
-        </Card>
+        <motion.div {...cardEntrance} transition={{ duration: 0.3, delay: 0.15 }}>
+          <Card>
+            <CardHeader>
+              <CardTitle>Assets</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-2xl font-semibold">
+                {state.properties.length} {state.properties.length === 1 ? "property" : "properties"}
+              </p>
+              <p className="mt-1 text-xs text-muted">
+                {state.vehicles.length} {state.vehicles.length === 1 ? "vehicle" : "vehicles"}
+              </p>
+            </CardContent>
+          </Card>
+        </motion.div>
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
@@ -152,7 +171,7 @@ export function Dashboard({ state }: { state: GameState }) {
           <CardContent>
             <ul className="space-y-3">
               {state.events.slice(0, 5).map((event) => (
-                <li key={event.id} className="rounded-xl bg-surface-raised px-4 py-3">
+                <li key={event.id} className="glass rounded-xl px-4 py-3">
                   <p className="text-sm font-medium">{event.title}</p>
                   <p className="mt-0.5 text-xs text-muted">{event.description}</p>
                 </li>

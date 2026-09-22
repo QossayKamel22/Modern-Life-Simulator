@@ -276,7 +276,7 @@ export function buyVehicle(state: GameState, listingId: string): ActionResult {
     purchasePrice: listing.price,
     currentValue: listing.price,
     condition: "excellent",
-    customization: { color: "factory", wheels: "stock", suspension: "stock", interior: "stock" },
+    customization: { color: listing.defaultColor, wheels: "stock", suspension: "stock", interior: "stock" },
     purchasedAt: state.time,
   };
 
@@ -305,6 +305,17 @@ export function sellVehicle(state: GameState, listingId: string): ActionResult {
 export function setActiveVehicle(state: GameState, listingId: string): ActionResult {
   if (!state.vehicles.some((v) => v.listingId === listingId)) return fail(state, "You don't own this vehicle.");
   return ok({ ...state, activeVehicleListingId: listingId }, "Active vehicle updated.");
+}
+
+export function customizeVehiclePaint(state: GameState, listingId: string, color: string): ActionResult {
+  if (!state.vehicles.some((v) => v.listingId === listingId)) return fail(state, "You don't own this vehicle.");
+  const next: GameState = {
+    ...state,
+    vehicles: state.vehicles.map((v) =>
+      v.listingId === listingId ? { ...v, customization: { ...v.customization, color } } : v,
+    ),
+  };
+  return ok(next, "Respray complete.");
 }
 
 // ---------------------------------------------------------------------------
