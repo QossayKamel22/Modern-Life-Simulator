@@ -17,7 +17,7 @@ interface CarViewerProps {
 
 function Floor() {
   return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.29, 0]} receiveShadow>
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.35, 0]} receiveShadow>
       <planeGeometry args={[16, 16]} />
       <MeshReflectorMaterial
         blur={[300, 80]}
@@ -55,10 +55,10 @@ function Rig({
       <PerspectiveCamera makeDefault position={position} fov={32} />
       <ambientLight intensity={0.35} />
       <spotLight position={[4, 6, 2]} angle={0.35} penumbra={0.6} intensity={80} castShadow color="#ffffff" />
-      <spotLight position={[-4, 4, -3]} angle={0.4} penumbra={0.8} intensity={30} color="#5b8cff" />
-      <pointLight position={[0, 1.5, -3]} intensity={12} color="#ff6bd6" />
+      <spotLight position={[-4, 4, -3]} angle={0.4} penumbra={0.8} intensity={30} color="#14b8a6" />
+      <pointLight position={[0, 1.5, -3]} intensity={12} color="#e8b84b" />
       <CarModel color={color} performance={performance} spin={spin} />
-      <ContactShadows position={[0, -0.28, 0]} opacity={0.65} scale={8} blur={2.2} far={2} />
+      <ContactShadows position={[0, -0.34, 0]} opacity={0.65} scale={8} blur={2.2} far={2} />
       <Floor />
       {/* Always mounted so the camera orients toward the car even when user interaction is disabled. */}
       <OrbitControls

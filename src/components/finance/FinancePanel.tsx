@@ -1,7 +1,10 @@
 "use client";
 
+import { motion, AnimatePresence } from "framer-motion";
 import type { GameState } from "@/types/game";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
+import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
+import { FadeInUp } from "@/components/ui/Motion";
 import { formatCurrency, formatDate } from "@/lib/utils/format";
 import { monthlyExpenses, monthlyIncome } from "@/game/finance";
 
@@ -34,6 +37,14 @@ export function FinancePanel({ state }: { state: GameState }) {
   const expenses = monthlyExpenses(state.finances);
   const savings = income - expenses;
 
+  const summaryCards = [
+    { label: "Cash", value: state.finances.cash },
+    { label: "Bank", value: state.finances.bank },
+    { label: "Income (30d)", value: income, tone: "text-success" },
+    { label: "Expenses (30d)", value: expenses, tone: "text-danger" },
+    { label: "Net Worth", value: netWorth(state) },
+  ];
+
   return (
     <div className="space-y-6">
       <div>
@@ -42,65 +53,71 @@ export function FinancePanel({ state }: { state: GameState }) {
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
-        <Card>
-          <CardHeader><CardTitle>Cash</CardTitle></CardHeader>
-          <CardContent><p className="text-xl font-semibold">{formatCurrency(state.finances.cash)}</p></CardContent>
-        </Card>
-        <Card>
-          <CardHeader><CardTitle>Bank</CardTitle></CardHeader>
-          <CardContent><p className="text-xl font-semibold">{formatCurrency(state.finances.bank)}</p></CardContent>
-        </Card>
-        <Card>
-          <CardHeader><CardTitle>Income (30d)</CardTitle></CardHeader>
-          <CardContent><p className="text-xl font-semibold text-success">{formatCurrency(income)}</p></CardContent>
-        </Card>
-        <Card>
-          <CardHeader><CardTitle>Expenses (30d)</CardTitle></CardHeader>
-          <CardContent><p className="text-xl font-semibold text-danger">{formatCurrency(expenses)}</p></CardContent>
-        </Card>
-        <Card>
-          <CardHeader><CardTitle>Net Worth</CardTitle></CardHeader>
-          <CardContent><p className="text-xl font-semibold">{formatCurrency(netWorth(state))}</p></CardContent>
-        </Card>
+        {summaryCards.map((card, index) => (
+          <FadeInUp key={card.label} index={index}>
+            <Card>
+              <CardHeader>
+                <CardTitle>{card.label}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className={`text-xl font-semibold ${card.tone ?? ""}`}>
+                  <AnimatedNumber value={card.value} format={(n) => formatCurrency(n)} />
+                </p>
+              </CardContent>
+            </Card>
+          </FadeInUp>
+        ))}
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Savings Rate (last 30 transactions)</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className={`text-lg font-semibold ${savings >= 0 ? "text-success" : "text-danger"}`}>
-            {formatCurrency(savings)}
-          </p>
-        </CardContent>
-      </Card>
+      <FadeInUp index={5}>
+        <Card>
+          <CardHeader>
+            <CardTitle>Savings Rate (last 30 transactions)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className={`text-lg font-semibold ${savings >= 0 ? "text-success" : "text-danger"}`}>
+              <AnimatedNumber value={savings} format={(n) => formatCurrency(n)} />
+            </p>
+          </CardContent>
+        </Card>
+      </FadeInUp>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Transaction History</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="divide-y divide-border">
-            {state.finances.transactions.length === 0 && (
-              <p className="py-4 text-sm text-muted">No transactions yet.</p>
-            )}
-            {state.finances.transactions.map((t) => (
-              <div key={t.id} className="flex items-center justify-between py-3">
-                <div>
-                  <p className="text-sm font-medium">{t.description}</p>
-                  <p className="text-xs text-muted">
-                    {CATEGORY_LABELS[t.category] ?? t.category} · {formatDate(t.timestamp)}
-                  </p>
-                </div>
-                <p className={`text-sm font-semibold ${t.type === "income" ? "text-success" : "text-danger"}`}>
-                  {t.type === "income" ? "+" : "-"}
-                  {formatCurrency(t.amount)}
-                </p>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      <FadeInUp index={6}>
+        <Card>
+          <CardHeader>
+            <CardTitle>Transaction History</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="divide-y divide-border">
+              {state.finances.transactions.length === 0 && (
+                <p className="py-4 text-sm text-muted">No transactions yet.</p>
+              )}
+              <AnimatePresence initial={false}>
+                {state.finances.transactions.map((t) => (
+                  <motion.div
+                    key={t.id}
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.25 }}
+                    className="flex items-center justify-between py-3"
+                  >
+                    <div>
+                      <p className="text-sm font-medium">{t.description}</p>
+                      <p className="text-xs text-muted">
+                        {CATEGORY_LABELS[t.category] ?? t.category} · {formatDate(t.timestamp)}
+                      </p>
+                    </div>
+                    <p className={`text-sm font-semibold ${t.type === "income" ? "text-success" : "text-danger"}`}>
+                      {t.type === "income" ? "+" : "-"}
+                      {formatCurrency(t.amount)}
+                    </p>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+          </CardContent>
+        </Card>
+      </FadeInUp>
     </div>
   );
 }

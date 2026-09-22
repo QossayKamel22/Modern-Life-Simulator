@@ -3,55 +3,56 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #eef1f6;
+  --background: #f3f0ea;
   --surface: #ffffff;
   --surface-raised: #ffffff;
-  --border: #e3e5ea;
-  --foreground: #14161a;
-  --muted: #6b7280;
-  --accent: #2f6fed;
+  --border: #e6e0d4;
+  --foreground: #191510;
+  --muted: #726a5c;
+  --accent: #a9711f;
   --accent-foreground: #ffffff;
-  --success: #17a06a;
-  --danger: #e0473d;
-  --warning: #d99323;
+  --success: #147d5f;
+  --danger: #c4432c;
+  --warning: #b5541f;
 
   /* Liquid Glass surfaces */
   --glass-bg: rgba(255, 255, 255, 0.55);
   --glass-bg-strong: rgba(255, 255, 255, 0.72);
   --glass-border: rgba(255, 255, 255, 0.65);
   --glass-highlight: rgba(255, 255, 255, 0.95);
-  --glass-shadow: rgba(30, 41, 59, 0.1);
+  --glass-shadow: rgba(30, 24, 15, 0.1);
   --glass-specular: rgba(255, 255, 255, 0.8);
 
-  --orb-1: #7dd3fc;
-  --orb-2: #c4b5fd;
-  --orb-3: #fbcfe8;
+  /* Warm gold / deep teal / copper — a Dubai-wealth palette, deliberately not the stock blue-violet-pink "AI" gradient */
+  --orb-1: #e8b84b;
+  --orb-2: #1f7a6c;
+  --orb-3: #c1652f;
 }
 
 .dark {
-  --background: #08090d;
-  --surface: #12151c;
-  --surface-raised: #171b24;
-  --border: #232733;
-  --foreground: #eef0f4;
-  --muted: #8b92a3;
-  --accent: #5b8cff;
-  --accent-foreground: #0b0d12;
-  --success: #37c98a;
-  --danger: #ef5b52;
-  --warning: #e5a63b;
+  --background: #0c0a07;
+  --surface: #171310;
+  --surface-raised: #1d1813;
+  --border: #2c2519;
+  --foreground: #f3ede1;
+  --muted: #a39683;
+  --accent: #e0a83f;
+  --accent-foreground: #1a1206;
+  --success: #2fb787;
+  --danger: #e2634a;
+  --warning: #e2793d;
 
   /* Liquid Glass surfaces */
-  --glass-bg: rgba(24, 26, 34, 0.55);
-  --glass-bg-strong: rgba(28, 31, 40, 0.75);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-highlight: rgba(255, 255, 255, 0.08);
+  --glass-bg: rgba(28, 24, 18, 0.55);
+  --glass-bg-strong: rgba(32, 27, 20, 0.75);
+  --glass-border: rgba(255, 245, 225, 0.1);
+  --glass-highlight: rgba(255, 245, 225, 0.08);
   --glass-shadow: rgba(0, 0, 0, 0.55);
-  --glass-specular: rgba(255, 255, 255, 0.16);
+  --glass-specular: rgba(255, 245, 225, 0.14);
 
-  --orb-1: #3b82f6;
-  --orb-2: #7c3aed;
-  --orb-3: #db2777;
+  --orb-1: #e8b84b;
+  --orb-2: #14b8a6;
+  --orb-3: #d97740;
 }
 
 @theme inline {

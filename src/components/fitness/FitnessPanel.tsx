@@ -5,6 +5,7 @@ import { useGameStore } from "@/hooks/useGameStore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { StatBar } from "@/components/ui/StatBar";
+import { FadeInUp } from "@/components/ui/Motion";
 
 export function FitnessPanel({ state }: { state: GameState }) {
   const goToGym = useGameStore((s) => s.goToGym);
@@ -16,18 +17,20 @@ export function FitnessPanel({ state }: { state: GameState }) {
         <p className="mt-1 text-sm text-muted">Stay in shape — but it costs time and energy.</p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Condition</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <StatBar label="Fitness Level" value={state.fitness.fitnessLevel} colorClassName="bg-success" />
-          <StatBar label="Strength" value={state.fitness.strength} colorClassName="bg-accent" />
-          <StatBar label="Energy" value={state.fitness.energy} colorClassName="bg-warning" />
-          <StatBar label="Health" value={state.fitness.health} colorClassName="bg-success" />
-          <Button onClick={goToGym}>Go to Gym (1.5h · 50 AED)</Button>
-        </CardContent>
-      </Card>
+      <FadeInUp>
+        <Card>
+          <CardHeader>
+            <CardTitle>Condition</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <StatBar label="Fitness Level" value={state.fitness.fitnessLevel} colorClassName="bg-success" />
+            <StatBar label="Strength" value={state.fitness.strength} colorClassName="bg-accent" />
+            <StatBar label="Energy" value={state.fitness.energy} colorClassName="bg-warning" />
+            <StatBar label="Health" value={state.fitness.health} colorClassName="bg-success" />
+            <Button onClick={goToGym}>Go to Gym (1.5h · 50 AED)</Button>
+          </CardContent>
+        </Card>
+      </FadeInUp>
     </div>
   );
 }

@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
+import { FadeInUp } from "@/components/ui/Motion";
 import { formatCurrency } from "@/lib/utils/format";
 
 export function CreatorPanel({ state }: { state: GameState }) {
@@ -24,56 +25,60 @@ export function CreatorPanel({ state }: { state: GameState }) {
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {state.creator.channels.map((channel) => (
-          <Card key={channel.id}>
+        {state.creator.channels.map((channel, index) => (
+          <FadeInUp key={channel.id} index={index} whileHover={{ y: -3 }}>
+            <Card>
+              <CardHeader>
+                <CardTitle>{channel.name}</CardTitle>
+                <Badge tone="accent">{CONTENT_NICHES.find((n) => n.id === channel.niche)?.label}</Badge>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <p className="text-2xl font-semibold">{channel.followers.toLocaleString()} followers</p>
+                <p className="text-xs text-muted">
+                  {channel.totalViews.toLocaleString()} views · {channel.videosPosted} videos posted
+                </p>
+                <p className="text-sm font-medium text-success">{formatCurrency(channel.revenue)} earned</p>
+                <Button className="w-full" size="sm" onClick={() => createContent(channel.id)}>
+                  Create Content (2h)
+                </Button>
+              </CardContent>
+            </Card>
+          </FadeInUp>
+        ))}
+
+        <FadeInUp index={state.creator.channels.length}>
+          <Card>
             <CardHeader>
-              <CardTitle>{channel.name}</CardTitle>
-              <Badge tone="accent">{CONTENT_NICHES.find((n) => n.id === channel.niche)?.label}</Badge>
+              <CardTitle>Launch a Channel</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
-              <p className="text-2xl font-semibold">{channel.followers.toLocaleString()} followers</p>
-              <p className="text-xs text-muted">
-                {channel.totalViews.toLocaleString()} views · {channel.videosPosted} videos posted
-              </p>
-              <p className="text-sm font-medium text-success">{formatCurrency(channel.revenue)} earned</p>
-              <Button className="w-full" size="sm" onClick={() => createContent(channel.id)}>
-                Create Content (2h)
+            <CardContent className="space-y-3">
+              <Input placeholder="Channel name" value={name} onChange={(e) => setName(e.target.value)} />
+              <div className="flex flex-wrap gap-2">
+                {CONTENT_NICHES.map((n) => (
+                  <button
+                    key={n.id}
+                    onClick={() => setNiche(n.id)}
+                    className={`rounded-full px-3 py-1 text-xs transition-all duration-200 ${
+                      niche === n.id ? "bg-accent text-accent-foreground shadow-[0_4px_14px_-4px_var(--accent)]" : "glass text-muted"
+                    }`}
+                  >
+                    {n.label}
+                  </button>
+                ))}
+              </div>
+              <Button
+                className="w-full"
+                disabled={!name.trim()}
+                onClick={() => {
+                  createChannel(name.trim(), niche);
+                  setName("");
+                }}
+              >
+                Launch Channel
               </Button>
             </CardContent>
           </Card>
-        ))}
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Launch a Channel</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <Input placeholder="Channel name" value={name} onChange={(e) => setName(e.target.value)} />
-            <div className="flex flex-wrap gap-2">
-              {CONTENT_NICHES.map((n) => (
-                <button
-                  key={n.id}
-                  onClick={() => setNiche(n.id)}
-                  className={`rounded-full px-3 py-1 text-xs transition-all duration-200 ${
-                    niche === n.id ? "bg-accent text-accent-foreground shadow-[0_4px_14px_-4px_var(--accent)]" : "glass text-muted"
-                  }`}
-                >
-                  {n.label}
-                </button>
-              ))}
-            </div>
-            <Button
-              className="w-full"
-              disabled={!name.trim()}
-              onClick={() => {
-                createChannel(name.trim(), niche);
-                setName("");
-              }}
-            >
-              Launch Channel
-            </Button>
-          </CardContent>
-        </Card>
+        </FadeInUp>
       </div>
     </div>
   );
