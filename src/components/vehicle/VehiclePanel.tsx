@@ -86,6 +86,7 @@ export function VehiclePanel({ state }: { state: GameState }) {
                 <DynamicCarViewer
                   color={owned?.customization.color ?? listing.defaultColor}
                   performance={listing.performance}
+                  bodyStyle={listing.bodyStyle}
                   className="h-full w-full"
                 />
               </motion.div>

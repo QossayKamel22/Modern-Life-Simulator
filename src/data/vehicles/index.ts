@@ -14,6 +14,7 @@ export const VEHICLE_LISTINGS: VehicleListing[] = [
     insuranceCostPerMonth: 220,
     performance: 28,
     defaultColor: "#c9ccd2",
+    bodyStyle: "sedan",
   },
   {
     id: "honda-civic",
@@ -26,6 +27,7 @@ export const VEHICLE_LISTINGS: VehicleListing[] = [
     insuranceCostPerMonth: 250,
     performance: 34,
     defaultColor: "#1e3fa8",
+    bodyStyle: "sedan",
   },
   {
     id: "toyota-camry",
@@ -38,6 +40,7 @@ export const VEHICLE_LISTINGS: VehicleListing[] = [
     insuranceCostPerMonth: 320,
     performance: 42,
     defaultColor: "#15171c",
+    bodyStyle: "sedan",
   },
   {
     id: "nissan-patrol",
@@ -50,6 +53,7 @@ export const VEHICLE_LISTINGS: VehicleListing[] = [
     insuranceCostPerMonth: 650,
     performance: 58,
     defaultColor: "#3c4046",
+    bodyStyle: "suv",
   },
   {
     id: "toyota-land-cruiser",
@@ -62,6 +66,7 @@ export const VEHICLE_LISTINGS: VehicleListing[] = [
     insuranceCostPerMonth: 700,
     performance: 62,
     defaultColor: "#f2f4f7",
+    bodyStyle: "suv",
   },
   {
     id: "bmw-m4",
@@ -74,6 +79,7 @@ export const VEHICLE_LISTINGS: VehicleListing[] = [
     insuranceCostPerMonth: 1800,
     performance: 84,
     defaultColor: "#1e3fa8",
+    bodyStyle: "coupe",
   },
   {
     id: "mercedes-s-class",
@@ -86,6 +92,7 @@ export const VEHICLE_LISTINGS: VehicleListing[] = [
     insuranceCostPerMonth: 2200,
     performance: 80,
     defaultColor: "#15171c",
+    bodyStyle: "sedan",
   },
   {
     id: "porsche-911",
@@ -98,6 +105,7 @@ export const VEHICLE_LISTINGS: VehicleListing[] = [
     insuranceCostPerMonth: 2600,
     performance: 90,
     defaultColor: "#c81e2c",
+    bodyStyle: "coupe",
   },
   {
     id: "range-rover-autobiography",
@@ -110,6 +118,7 @@ export const VEHICLE_LISTINGS: VehicleListing[] = [
     insuranceCostPerMonth: 2900,
     performance: 76,
     defaultColor: "#0b3d2e",
+    bodyStyle: "suv",
   },
   {
     id: "lamborghini-huracan",
@@ -122,6 +131,7 @@ export const VEHICLE_LISTINGS: VehicleListing[] = [
     insuranceCostPerMonth: 5200,
     performance: 96,
     defaultColor: "#e8c400",
+    bodyStyle: "hypercar",
   },
   {
     id: "ferrari-sf90",
@@ -134,6 +144,7 @@ export const VEHICLE_LISTINGS: VehicleListing[] = [
     insuranceCostPerMonth: 7500,
     performance: 99,
     defaultColor: "#c81e2c",
+    bodyStyle: "hypercar",
   },
   {
     id: "bugatti-chiron",
@@ -146,6 +157,7 @@ export const VEHICLE_LISTINGS: VehicleListing[] = [
     insuranceCostPerMonth: 25000,
     performance: 100,
     defaultColor: "#3c4046",
+    bodyStyle: "hypercar",
   },
 ];
 

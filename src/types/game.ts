@@ -130,6 +130,8 @@ export interface OwnedProperty {
 
 export type VehicleCondition = "poor" | "fair" | "good" | "excellent";
 
+export type VehicleBodyStyle = "sedan" | "suv" | "coupe" | "hypercar";
+
 export interface VehicleListing {
   id: string;
   brand: string;
@@ -141,6 +143,7 @@ export interface VehicleListing {
   insuranceCostPerMonth: number;
   performance: number; // 0-100
   defaultColor: string; // hex, used for the showroom default paint
+  bodyStyle: VehicleBodyStyle; // drives the 3D showroom silhouette
 }
 
 export interface VehicleCustomization {

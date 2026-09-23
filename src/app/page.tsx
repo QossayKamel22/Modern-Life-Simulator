@@ -19,7 +19,14 @@ export default function LandingPage() {
   return (
     <main className="relative flex flex-1 flex-col overflow-hidden">
       <div className="absolute inset-0 -z-0 opacity-90">
-        <DynamicCarViewer color="#c81e2c" performance={99} className="h-full w-full" zoom={1.35} controls={false} />
+        <DynamicCarViewer
+          color="#c81e2c"
+          performance={99}
+          bodyStyle="hypercar"
+          className="h-full w-full"
+          zoom={1.35}
+          controls={false}
+        />
       </div>
       <div className="pointer-events-none absolute inset-0 -z-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
 

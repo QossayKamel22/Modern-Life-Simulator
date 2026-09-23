@@ -12,7 +12,7 @@ import { formatCurrency, formatDate } from "@/lib/utils/format";
 import { getCareerTrackById } from "@/data/careers";
 import { getCityById } from "@/data/cities";
 import { monthlyExpenses, monthlyIncome, netWorth } from "@/game/finance";
-import { ACHIEVEMENTS } from "@/game/achievements";
+import { ACHIEVEMENTS, type Achievement } from "@/game/achievements";
 
 const cardEntrance = {
   initial: { opacity: 0, y: 14 },
@@ -29,7 +29,11 @@ export function Dashboard({ state }: { state: GameState }) {
   const followers = state.creator.channels.reduce((sum, c) => sum + c.followers, 0);
   const views = state.creator.channels.reduce((sum, c) => sum + c.totalViews, 0);
   const creatorRevenue = state.creator.channels.reduce((sum, c) => sum + c.revenue, 0);
-  const unlockedAchievements = ACHIEVEMENTS.filter((a) => state.achievements.includes(a.id));
+  // Ordered by unlock time (state.achievements), not by ACHIEVEMENTS' fixed definition order —
+  // otherwise "recently unlocked" would show whichever entries happen to sort first in the list.
+  const unlockedAchievements = state.achievements
+    .map((id) => ACHIEVEMENTS.find((a) => a.id === id))
+    .filter((a): a is Achievement => a !== undefined);
 
   return (
     <div className="space-y-6">

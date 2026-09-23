@@ -23,7 +23,15 @@ export function IntroSequence({ onDone }: { onDone: () => void }) {
   return (
     <main className="relative flex flex-1 flex-col overflow-hidden" onClick={advance}>
       <div className="absolute inset-0 -z-0 opacity-80">
-        <DynamicCarViewer color="#e8b84b" performance={90} className="h-full w-full" zoom={1.5} controls={false} spin />
+        <DynamicCarViewer
+          color="#e8b84b"
+          performance={90}
+          bodyStyle="coupe"
+          className="h-full w-full"
+          zoom={1.5}
+          controls={false}
+          spin
+        />
       </div>
       <div className="pointer-events-none absolute inset-0 -z-0 bg-gradient-to-t from-background via-background/70 to-background/20" />
 
